@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
-import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { addMonths, format, setMonth, setYear, subMonths } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -43,6 +43,7 @@ export function DateRangePicker({
   descriptionClassName,
 }: DateRangePickerProps) {
   const [date, setDate] = useState<DateRange>(value);
+  const [tempDate, setTempDate] = useState<DateRange>(value);
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState<string>(dateRangeToString(value));
@@ -53,6 +54,7 @@ export function DateRangePicker({
   // Update internal state when prop changes
   useEffect(() => {
     setDate(value);
+    setTempDate(value);
     setInputValue(dateRangeToString(value));
     setLastValidInput(dateRangeToString(value));
   }, [value]);
@@ -68,9 +70,8 @@ export function DateRangePicker({
       
       // Only update if we have at least a valid "from" date
       if (newRange.from) {
-        setDate(newRange);
+        setTempDate(newRange);
         setLastValidInput(newValue);
-        onChange?.(newRange);
         
         // Update calendar to show the month of the from date
         setCalendarDate(newRange.from);
@@ -124,21 +125,40 @@ export function DateRangePicker({
 
   // Handle date selection
   const handleSelect = (range: DateRange) => {
-    setDate(range);
-    
-    // If we have both dates, close the popover
-    if (range.from && range.to) {
-      setIsOpen(false);
-      
-      // Format and update the input
-      const formattedRange = dateRangeToString(range);
-      setInputValue(formattedRange);
-      setLastValidInput(formattedRange);
-      
-      // Notify parent component
-      onChange?.(range);
-    }
+    setTempDate(range);
   };
+
+  // Handle save
+  const handleSave = () => {
+    setDate(tempDate);
+    
+    // Format and update the input
+    const formattedRange = dateRangeToString(tempDate);
+    setInputValue(formattedRange);
+    setLastValidInput(formattedRange);
+    
+    // Notify parent component
+    onChange?.(tempDate);
+    
+    // Close the popover
+    setIsOpen(false);
+  };
+
+  // Handle cancel
+  const handleCancel = () => {
+    // Reset temp date to current date
+    setTempDate(date);
+    
+    // Close the popover
+    setIsOpen(false);
+  };
+
+  // Reset temp date when popover opens
+  useEffect(() => {
+    if (isOpen) {
+      setTempDate(date);
+    }
+  }, [isOpen, date]);
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -191,19 +211,19 @@ export function DateRangePicker({
             tabIndex={-1}
             onKeyDown={(e) => {
               if (e.key === "Escape") {
-                setIsOpen(false);
+                handleCancel();
               }
             }}
           >
             <div className="flex items-center justify-between mb-2">
               <Button
-                variant="ghost"
-                size="icon"
+                variant="secondary"
+                size="sm"
                 onClick={handlePreviousMonth}
                 className="date-picker-transition"
                 aria-label="Previous month"
               >
-                <ChevronLeft className="h-4 w-4" />
+                Previous
               </Button>
               
               <YearMonthSelector
@@ -215,19 +235,19 @@ export function DateRangePicker({
               />
               
               <Button
-                variant="ghost"
-                size="icon"
+                variant="secondary"
+                size="sm"
                 onClick={handleNextMonth}
                 className="date-picker-transition"
                 aria-label="Next month"
               >
-                <ChevronRight className="h-4 w-4" />
+                Next
               </Button>
             </div>
             
             <Calendar
               mode="range"
-              selected={date}
+              selected={tempDate}
               onSelect={(range) => handleSelect(range as DateRange)}
               month={calendarDate}
               onMonthChange={setCalendarDate}
@@ -239,10 +259,29 @@ export function DateRangePicker({
                 day_range_start: "calendar-day-range-from",
                 day_range_end: "calendar-day-range-to",
                 day_range_middle: "calendar-day-range",
+                nav: "hidden", // Hide the built-in navigation
+                nav_button: "hidden", // Hide the built-in navigation buttons
               }}
               showOutsideDays={false}
               fixedWeeks
             />
+            
+            <div className="flex justify-end gap-2 mt-4 border-t border-border pt-4">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={handleSave}
+              >
+                Save
+              </Button>
+            </div>
           </div>
         </PopoverContent>
       </Popover>
