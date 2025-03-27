@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { CalendarIcon } from "lucide-react";
 import { addMonths, format, setMonth, setYear, subMonths } from "date-fns";
@@ -51,7 +50,6 @@ export function DateRangePicker({
   const calendarRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Update internal state when prop changes
   useEffect(() => {
     setDate(value);
     setTempDate(value);
@@ -59,37 +57,30 @@ export function DateRangePicker({
     setLastValidInput(dateRangeToString(value));
   }, [value]);
 
-  // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
     
-    // Try to parse the input as a date range
     try {
       const newRange = parseDateRange(newValue);
       
-      // Only update if we have at least a valid "from" date
       if (newRange.from) {
         setTempDate(newRange);
         setLastValidInput(newValue);
         
-        // Update calendar to show the month of the from date
         setCalendarDate(newRange.from);
       }
     } catch (error) {
-      // If parsing fails, don't update the date
       console.log("Invalid date format");
     }
   };
 
-  // Handle blur event to restore last valid value if current is invalid
   const handleInputBlur = () => {
     if (inputValue !== lastValidInput) {
       setInputValue(lastValidInput);
     }
   };
 
-  // Handle keyboard events
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleInputBlur();
@@ -101,14 +92,12 @@ export function DateRangePicker({
       e.preventDefault();
       setIsOpen(true);
       
-      // Focus on the calendar
       setTimeout(() => {
         calendarRef.current?.focus();
       }, 100);
     }
   };
 
-  // Handle month navigation
   const handlePreviousMonth = () => {
     setCalendarDate(prevDate => subMonths(prevDate, 1));
   };
@@ -117,50 +106,39 @@ export function DateRangePicker({
     setCalendarDate(prevDate => addMonths(prevDate, 1));
   };
 
-  // Handle year/month selection
   const handleYearMonthSelect = (month: number, year: number) => {
     const newDate = setYear(setMonth(calendarDate, month), year);
     setCalendarDate(newDate);
   };
 
-  // Handle date selection
   const handleSelect = (range: DateRange) => {
     setTempDate(range);
   };
 
-  // Handle save
   const handleSave = () => {
     setDate(tempDate);
     
-    // Format and update the input
     const formattedRange = dateRangeToString(tempDate);
     setInputValue(formattedRange);
     setLastValidInput(formattedRange);
     
-    // Notify parent component
     onChange?.(tempDate);
     
-    // Close the popover
     setIsOpen(false);
   };
 
-  // Handle cancel
   const handleCancel = () => {
-    // Reset temp date to current date
     setTempDate(date);
     
-    // Close the popover
     setIsOpen(false);
   };
 
-  // Reset temp date when popover opens
   useEffect(() => {
     if (isOpen) {
       setTempDate(date);
     }
   }, [isOpen, date]);
 
-  // Handle keyboard navigation within the calendar
   const handleCalendarKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       handleCancel();
@@ -264,8 +242,8 @@ export function DateRangePicker({
                 day_range_start: "calendar-day-range-from",
                 day_range_end: "calendar-day-range-to", 
                 day_range_middle: "calendar-day-range",
-                nav: "hidden", // Hide the built-in navigation
-                nav_button: "hidden", // Hide the built-in navigation buttons
+                nav: "hidden",
+                nav_button: "hidden",
                 table: "w-full border-collapse space-y-1 focus-within:outline-none",
                 head_row: "flex",
                 head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
@@ -275,7 +253,7 @@ export function DateRangePicker({
               showOutsideDays={false}
               fixedWeeks
               enableTabNavigation={true}
-              initialFocus={true}
+              initialFocus
             />
             
             <div className="flex justify-end gap-2 mt-4 border-t border-border pt-4">
