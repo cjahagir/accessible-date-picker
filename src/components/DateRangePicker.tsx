@@ -160,6 +160,15 @@ export function DateRangePicker({
     }
   }, [isOpen, date]);
 
+  // Handle keyboard navigation within the calendar
+  const handleCalendarKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      handleCancel();
+    } else if (e.key === "Enter") {
+      handleSave();
+    }
+  };
+
   return (
     <div className={cn("space-y-2", className)}>
       {label && (
@@ -209,11 +218,7 @@ export function DateRangePicker({
             ref={calendarRef} 
             className="flex flex-col p-3 outline-none" 
             tabIndex={-1}
-            onKeyDown={(e) => {
-              if (e.key === "Escape") {
-                handleCancel();
-              }
-            }}
+            onKeyDown={handleCalendarKeyDown}
           >
             <div className="flex items-center justify-between mb-2">
               <Button
@@ -255,15 +260,22 @@ export function DateRangePicker({
               disabled={isDateDisabled}
               className="p-0 pointer-events-auto"
               classNames={{
-                day: "calendar-day date-picker-transition",
+                day: "calendar-day date-picker-transition focus:bg-accent focus:text-accent-foreground focus:ring-2 focus:ring-ring",
                 day_range_start: "calendar-day-range-from",
-                day_range_end: "calendar-day-range-to",
+                day_range_end: "calendar-day-range-to", 
                 day_range_middle: "calendar-day-range",
                 nav: "hidden", // Hide the built-in navigation
                 nav_button: "hidden", // Hide the built-in navigation buttons
+                table: "w-full border-collapse space-y-1 focus-within:outline-none",
+                head_row: "flex",
+                head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                row: "flex w-full mt-2",
+                cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
               }}
               showOutsideDays={false}
               fixedWeeks
+              enableTabNavigation={true}
+              initialFocus={true}
             />
             
             <div className="flex justify-end gap-2 mt-4 border-t border-border pt-4">
