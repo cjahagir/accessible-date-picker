@@ -98,7 +98,7 @@
 
 @layer components {
   .date-picker-transition {
-    @apply transition-all duration-200 ease-apple;
+    @apply transition-all duration-200 ease-in-out;
   }
   
   .glass-morphism {
