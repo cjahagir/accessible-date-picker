@@ -136,13 +136,18 @@ export function DateRangePicker({
 
   const handleCancel = () => {
     setTempDate(date);
-    
     setIsOpen(false);
   };
 
   useEffect(() => {
     if (isOpen) {
       setTempDate(date);
+      
+      if (!date.from) {
+        setCalendarDate(new Date());
+      } else {
+        setCalendarDate(date.from);
+      }
     }
   }, [isOpen, date]);
 
