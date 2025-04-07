@@ -111,8 +111,15 @@ export function DateRangePicker({
     setCalendarDate(newDate);
   };
 
-  const handleSelect = (range: DateRange) => {
-    setTempDate(range);
+  const handleSelect = (range: DateRange | undefined) => {
+    if (range) {
+      setTempDate(prevTempDate => {
+        if (range.from && !range.to && prevTempDate.to) {
+          return { from: range.from, to: undefined };
+        }
+        return range;
+      });
+    }
   };
 
   const handleSave = () => {
@@ -231,7 +238,7 @@ export function DateRangePicker({
             <Calendar
               mode="range"
               selected={tempDate}
-              onSelect={(range) => handleSelect(range as DateRange)}
+              onSelect={handleSelect}
               month={calendarDate}
               onMonthChange={setCalendarDate}
               numberOfMonths={1}
