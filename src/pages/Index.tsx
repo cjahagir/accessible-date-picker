@@ -1,132 +1,130 @@
-
 import { useState } from "react";
-import { DateRangePicker } from "@/components/DateRangePicker";
-import { DateRange } from "@/lib/date-utils";
-import { format } from "date-fns";
+import { SimpleDateRangePicker } from "@/components/SimpleDateRangePicker";
+import { SimpleCalendarDateRange } from "@/components/SimpleCalendar";
+import "./index.css";
 
 const Index = () => {
-  const [dateRange, setDateRange] = useState<DateRange>({
+  const [dateRange, setDateRange] = useState<SimpleCalendarDateRange>({
     from: undefined,
     to: undefined,
   });
 
-  const handleDateChange = (range: DateRange) => {
+  const handleDateChange = (range: SimpleCalendarDateRange) => {
     setDateRange(range);
     console.log("Date range changed:", range);
   };
 
+  // Format full date
+  const formatFullDate = (date: Date | undefined) => {
+    if (!date) return "None";
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric"
+    });
+  };
+
+  // Calculate duration in days
+  const calculateDuration = () => {
+    if (!dateRange.from || !dateRange.to) return 0;
+    
+    const diffTime = Math.abs(dateRange.to.getTime() - dateRange.from.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-b from-background to-secondary/30">
-      <div className="w-full max-w-md mx-auto space-y-12">
-        <div className="space-y-2 text-center">
-          <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-2">
-            Accessible Date Picker
-          </div>
-          <h1 className="text-3xl font-medium tracking-tight">
-            Select a Date Range
-          </h1>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            A beautiful, accessible date range picker with keyboard navigation and manual input support.
+    <div className="app-container">
+      <div className="app-content">
+        <div className="app-header">
+          <div className="app-badge">Accessible Date Picker</div>
+          <h1 className="app-title">Select a Date Range</h1>
+          <p className="app-description">
+            A simple, accessible date range picker with keyboard navigation support.
           </p>
         </div>
 
-        <div className="space-y-6">
-          <div className="glass-morphism rounded-xl p-6 shadow-sm">
-            <div className="space-y-1 mb-6">
-              <h2 className="text-lg font-medium">Date Selection</h2>
-              <p className="text-sm text-muted-foreground">
-                Choose dates by typing or using the calendar.
-              </p>
-            </div>
-
-            <DateRangePicker
-              value={dateRange}
-              onChange={handleDateChange}
-              label="Select date range"
-              description="Tip: You can type dates manually (MM/DD/YYYY format) or use arrow keys to navigate."
-              calendarClassName="w-auto"
-            />
-
-            <div className="mt-8 pt-6 border-t border-border">
-              <h3 className="text-sm font-medium mb-2">Selected Range</h3>
-              <div className="bg-secondary/50 rounded-lg p-4 text-sm">
-                {dateRange.from ? (
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-muted-foreground">Start Date:</span>
-                      <span className="font-medium">
-                        {format(dateRange.from, "MMMM d, yyyy")}
-                      </span>
-                    </div>
-                    {dateRange.to && (
-                      <div className="flex justify-between items-center">
-                        <span className="text-muted-foreground">End Date:</span>
-                        <span className="font-medium">
-                          {format(dateRange.to, "MMMM d, yyyy")}
-                        </span>
-                      </div>
-                    )}
-                    {dateRange.from && dateRange.to && (
-                      <div className="flex justify-between items-center border-t border-border pt-2 mt-2">
-                        <span className="text-muted-foreground">Duration:</span>
-                        <span className="font-medium">
-                          {Math.ceil(
-                            (dateRange.to.getTime() - dateRange.from.getTime()) /
-                              (1000 * 60 * 60 * 24)
-                          ) + 1}{" "}
-                          days
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-center text-muted-foreground py-2">
-                    No dates selected
-                  </p>
-                )}
-              </div>
-            </div>
+        <div className="app-card">
+          <div className="card-header">
+            <h2 className="card-title">Date Selection</h2>
+            <p className="card-description">
+              Choose dates using the calendar.
+            </p>
           </div>
 
-          <div className="glass-morphism rounded-xl p-6 shadow-sm">
-            <div className="space-y-1">
-              <h2 className="text-lg font-medium">Keyboard Controls</h2>
-              <p className="text-sm text-muted-foreground">
-                Full keyboard navigation for accessibility.
-              </p>
-            </div>
+          <SimpleDateRangePicker
+            value={dateRange}
+            onChange={handleDateChange}
+            label="Select date range"
+            description="Click to select dates using the calendar"
+          />
 
-            <ul className="mt-4 space-y-2 text-sm">
-              <li className="flex items-start gap-2">
-                <span className="inline-block px-2 py-0.5 bg-secondary rounded text-xs font-mono mt-0.5">
-                  Tab
-                </span>
-                <span>Navigate between interactive elements</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="inline-block px-2 py-0.5 bg-secondary rounded text-xs font-mono mt-0.5">
-                  Space/Enter
-                </span>
-                <span>Select a date or open the calendar</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="inline-block px-2 py-0.5 bg-secondary rounded text-xs font-mono mt-0.5">
-                  Arrow Keys
-                </span>
-                <span>Navigate between dates in the calendar</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="inline-block px-2 py-0.5 bg-secondary rounded text-xs font-mono mt-0.5">
-                  Escape
-                </span>
-                <span>Close the calendar or cancel input</span>
-              </li>
-            </ul>
+          <div className="results-section">
+            <h3 className="results-title">Selected Range</h3>
+            <div className="results-content">
+              {dateRange.from ? (
+                <div className="results-data">
+                  <div className="results-row">
+                    <span className="results-label">Start Date:</span>
+                    <span className="results-value">
+                      {formatFullDate(dateRange.from)}
+                    </span>
+                  </div>
+                  {dateRange.to && (
+                    <div className="results-row">
+                      <span className="results-label">End Date:</span>
+                      <span className="results-value">
+                        {formatFullDate(dateRange.to)}
+                      </span>
+                    </div>
+                  )}
+                  {dateRange.from && dateRange.to && (
+                    <div className="results-row results-summary">
+                      <span className="results-label">Duration:</span>
+                      <span className="results-value">
+                        {calculateDuration()} days
+                      </span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="results-empty">
+                  No dates selected
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="text-center text-sm text-muted-foreground">
-          A minimalist, accessible date picker inspired by modern design principles.
+        <div className="app-card">
+          <div className="card-header">
+            <h2 className="card-title">Keyboard Controls</h2>
+            <p className="card-description">
+              Keyboard navigation for accessibility.
+            </p>
+          </div>
+
+          <ul className="keyboard-shortcuts">
+            <li className="shortcut-item">
+              <span className="shortcut-key">Tab</span>
+              <span className="shortcut-description">Navigate between interactive elements</span>
+            </li>
+            <li className="shortcut-item">
+              <span className="shortcut-key">Space/Enter</span>
+              <span className="shortcut-description">Select a date or open the calendar</span>
+            </li>
+            <li className="shortcut-item">
+              <span className="shortcut-key">Arrow Keys</span>
+              <span className="shortcut-description">Navigate between dates in the calendar</span>
+            </li>
+            <li className="shortcut-item">
+              <span className="shortcut-key">Escape</span>
+              <span className="shortcut-description">Close the calendar</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="app-footer">
+          A minimalist, accessible date picker with simple design principles.
         </div>
       </div>
     </div>
