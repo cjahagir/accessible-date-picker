@@ -23,6 +23,7 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [selectedRange, setSelectedRange] = useState<SimpleCalendarDateRange>(selected);
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
+  const [showYearMonthSelector, setShowYearMonthSelector] = useState(false);
 
   useEffect(() => {
     setSelectedRange(selected);
@@ -149,6 +150,65 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
   // Days of the week labels
   const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+  // Year and month selector
+  const renderYearMonthSelector = () => {
+    const years = Array.from({ length: 100 }, (_, i) => currentMonth.getFullYear() - 50 + i);
+    const months = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    return (
+      <div className="year-month-selector">
+        <div className="selector-header">
+          <h3>Select Month and Year</h3>
+          <button 
+            className="selector-close-button"
+            onClick={() => setShowYearMonthSelector(false)}
+          >
+            ×
+          </button>
+        </div>
+        <div className="selector-content">
+          <div className="month-selector">
+            <h4>Month</h4>
+            <div className="month-list">
+              {months.map((month, index) => (
+                <button
+                  key={month}
+                  className={`month-item ${index === currentMonth.getMonth() ? 'active' : ''}`}
+                  onClick={() => {
+                    setCurrentMonth(new Date(currentMonth.getFullYear(), index, 1));
+                    setShowYearMonthSelector(false);
+                  }}
+                >
+                  {month}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="year-selector">
+            <h4>Year</h4>
+            <div className="year-list">
+              {years.map((year) => (
+                <button
+                  key={year}
+                  className={`year-item ${year === currentMonth.getFullYear() ? 'active' : ''}`}
+                  onClick={() => {
+                    setCurrentMonth(new Date(year, currentMonth.getMonth(), 1));
+                    setShowYearMonthSelector(false);
+                  }}
+                >
+                  {year}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={`simple-calendar ${className}`}>
       <div className="calendar-header">
@@ -159,7 +219,12 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
         >
           &lt;
         </button>
-        <div className="calendar-title">{formatMonthYear(currentMonth)}</div>
+        <button 
+          className="calendar-title"
+          onClick={() => setShowYearMonthSelector(true)}
+        >
+          {formatMonthYear(currentMonth)}
+        </button>
         <button
           className="calendar-nav-button"
           onClick={goToNextMonth}
@@ -168,6 +233,8 @@ export const SimpleCalendar: React.FC<SimpleCalendarProps> = ({
           &gt;
         </button>
       </div>
+      
+      {showYearMonthSelector && renderYearMonthSelector()}
       
       <div className="calendar-weekdays">
         {weekdays.map(day => (

@@ -18,6 +18,15 @@
 .calendar-title {
   font-weight: 500;
   font-size: 16px;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.calendar-title:hover {
+  background-color: #f3f4f6;
 }
 
 .calendar-nav-button {
@@ -121,6 +130,97 @@
   border-bottom-left-radius: 0;
 }
 
+/* Year-Month Selector Styles */
+.year-month-selector {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.selector-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.selector-close-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.selector-close-button:hover {
+  background-color: #f3f4f6;
+}
+
+.selector-content {
+  display: flex;
+  max-height: 300px;
+}
+
+.month-selector, .year-selector {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.month-selector {
+  border-right: 1px solid #eee;
+}
+
+.month-selector h4, .year-selector h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.month-list, .year-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.month-item, .year-item {
+  padding: 6px 12px;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.month-item:hover, .year-item:hover {
+  background-color: #f3f4f6;
+}
+
+.month-item.active, .year-item.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   .simple-calendar {
@@ -130,6 +230,14 @@
 
   .calendar-header {
     border-bottom-color: #374151;
+  }
+
+  .calendar-title {
+    color: #f9fafb;
+  }
+
+  .calendar-title:hover {
+    background-color: #374151;
   }
 
   .calendar-nav-button {
@@ -171,5 +279,39 @@
 
   .calendar-day.hover-range {
     background-color: rgba(59, 130, 246, 0.15);
+  }
+
+  /* Dark mode for year-month selector */
+  .year-month-selector {
+    background-color: #1f2937;
+    color: #f9fafb;
+  }
+
+  .selector-header {
+    border-bottom-color: #374151;
+  }
+
+  .selector-close-button {
+    color: #f9fafb;
+  }
+
+  .selector-close-button:hover {
+    background-color: #374151;
+  }
+
+  .month-selector {
+    border-right-color: #374151;
+  }
+
+  .month-selector h4, .year-selector h4 {
+    color: #9ca3af;
+  }
+
+  .month-item, .year-item {
+    color: #f9fafb;
+  }
+
+  .month-item:hover, .year-item:hover {
+    background-color: #374151;
   }
 }

@@ -48,11 +48,6 @@ export const SimpleDateRangePicker: React.FC<SimpleDateRangePickerProps> = ({
   // Handle date selection from calendar
   const handleSelect = (range: SimpleCalendarDateRange) => {
     setDateRange(range);
-    
-    if (range.to) {
-      onChange?.(range);
-      setIsOpen(false);
-    }
   };
 
   // Handle click outside to close dropdown
@@ -79,6 +74,24 @@ export const SimpleDateRangePicker: React.FC<SimpleDateRangePickerProps> = ({
   React.useEffect(() => {
     setDateRange(value);
   }, [value]);
+
+  // Handle apply button click
+  const handleApply = () => {
+    // Only call onChange if both from and to dates are selected
+    if (dateRange.from && dateRange.to) {
+      onChange?.(dateRange);
+      setIsOpen(false);
+    } else {
+      // Optionally show a message or visual feedback that a complete range is required
+      const rangeInputEl = document.getElementById(id);
+      if (rangeInputEl) {
+        rangeInputEl.classList.add("incomplete-range");
+        setTimeout(() => {
+          rangeInputEl.classList.remove("incomplete-range");
+        }, 500);
+      }
+    }
+  };
 
   return (
     <div className={`simple-date-range-picker ${className}`} ref={containerRef}>
@@ -128,10 +141,7 @@ export const SimpleDateRangePicker: React.FC<SimpleDateRangePickerProps> = ({
             </button>
             <button
               className="picker-apply-button"
-              onClick={() => {
-                onChange?.(dateRange);
-                setIsOpen(false);
-              }}
+              onClick={handleApply}
             >
               Apply
             </button>
